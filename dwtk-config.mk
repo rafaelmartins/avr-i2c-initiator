@@ -6,9 +6,9 @@ AVR_HFUSE ?= 0xDF
 
 FIRMWARE_SOURCES = \
 	test.c \
-	i2c-master.c \
+	i2c-initiator.c \
 	$(NULL)
 
 FIRMWARE_HEADERS = \
-	i2c-master.h \
+	i2c-initiator.h \
 	$(NULL)

@@ -1,6 +1,6 @@
 /*
- * avr-i2c-master: An implementation of I2C bit-bang master for AVR
- *                 microcontrollers.
+ * avr-i2c-initiator: An implementation of I2C bit-bang initiator for AVR
+ *                    microcontrollers.
  * Copyright (C) 2020 Rafael G. Martins <rafael@rafaelmartins.eng.br>
  *
  * This program can be distributed under the terms of the BSD License.
@@ -9,7 +9,7 @@
 
 #include <stdlib.h>
 #include <util/delay.h>
-#include "i2c-master.h"
+#include "i2c-initiator.h"
 
 #define __delay() _delay_us(5);
 #define __delay2() _delay_us(2.5);
@@ -66,7 +66,7 @@ toggle_scl()
 
 
 void
-i2c_master_init_internal(volatile uint8_t *ddr, volatile uint8_t *port,
+i2c_initiator_init_internal(volatile uint8_t *ddr, volatile uint8_t *port,
     volatile uint8_t *pin, uint8_t sda, uint8_t scl)
 {
     if (i2c_ddr != NULL)
@@ -84,7 +84,7 @@ i2c_master_init_internal(volatile uint8_t *ddr, volatile uint8_t *port,
 
 
 _I2C_LL void
-i2c_master_start_condition(void)
+i2c_initiator_start_condition(void)
 {
     release_sda();
     release_scl();
@@ -96,7 +96,7 @@ i2c_master_start_condition(void)
 
 
 _I2C_LL void
-i2c_master_stop_condition(void)
+i2c_initiator_stop_condition(void)
 {
     hold_sda();
     release_scl();
@@ -106,7 +106,7 @@ i2c_master_stop_condition(void)
 
 
 _I2C_LL bool
-i2c_master_write_byte(uint8_t data)
+i2c_initiator_write_byte(uint8_t data)
 {
     for (uint8_t i = 0; i < 8; i++) {
         if (data & (1 << (7 - i))) {
@@ -135,7 +135,7 @@ i2c_master_write_byte(uint8_t data)
 
 
 _I2C_LL uint8_t
-i2c_master_read_byte(bool last)
+i2c_initiator_read_byte(bool last)
 {
     uint8_t out = 0;
 
@@ -173,50 +173,50 @@ i2c_master_read_byte(bool last)
 #ifndef I2C_LOW_LEVEL_API
 
 bool
-i2c_master_write(uint8_t slave_address, uint8_t reg_address, uint8_t *data, size_t data_len)
+i2c_initiator_write(uint8_t slave_address, uint8_t reg_address, uint8_t *data, size_t data_len)
 {
-    i2c_master_start_condition();
+    i2c_initiator_start_condition();
 
-    if (!i2c_master_write_byte(slave_address << 1)) {
+    if (!i2c_initiator_write_byte(slave_address << 1)) {
         return false;
     }
 
-    if (!i2c_master_write_byte(reg_address)) {
+    if (!i2c_initiator_write_byte(reg_address)) {
         return false;
     }
 
     for (size_t i = 0; i < data_len; i++) {
-        if (!i2c_master_write_byte(data[i])) {
+        if (!i2c_initiator_write_byte(data[i])) {
             return false;
         }
     }
 
-    i2c_master_stop_condition();
+    i2c_initiator_stop_condition();
 
     return true;
 }
 
 
 bool
-i2c_master_read(uint8_t slave_address, uint8_t reg_address, uint8_t *data, size_t data_len)
+i2c_initiator_read(uint8_t slave_address, uint8_t reg_address, uint8_t *data, size_t data_len)
 {
-    if (!i2c_master_write(slave_address, reg_address, NULL, 0)) {
+    if (!i2c_initiator_write(slave_address, reg_address, NULL, 0)) {
         return false;
     }
 
-    i2c_master_start_condition();
+    i2c_initiator_start_condition();
 
-    if (!i2c_master_write_byte((slave_address << 1) | (1 << 0))) {
+    if (!i2c_initiator_write_byte((slave_address << 1) | (1 << 0))) {
         return false;
     }
 
     if (data != NULL) {
         for (size_t i = 0; i < data_len; i++) {
-            data[i] = i2c_master_read_byte(data_len - i == 1);
+            data[i] = i2c_initiator_read_byte(data_len - i == 1);
         }
     }
 
-    i2c_master_stop_condition();
+    i2c_initiator_stop_condition();
 
     return true;
 }

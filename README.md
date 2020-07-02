@@ -1,6 +1,6 @@
-# avr-i2c-master
+# avr-i2c-initiator
 
-An implementation of I2C bit-bang master for AVR microcontrollers.
+An implementation of I2C bit-bang initiator for AVR microcontrollers.
 
 This is useful for projects with multiple MCUs that are already implementing an I2C bus, to offload some logic from the main MCU and/or expand ports.
 
@@ -14,23 +14,23 @@ TODO: expand
 
 ## How to use it?
 
-Just copy `i2c-master.h` and `i2c-master.c` to your project and add them to your build system. `test.c` is an usage example. The [API](#api) section below explains the usage of the functions exported by the library.
+Just copy `i2c-initiator.h` and `i2c-initiator.c` to your project and add them to your build system. `test.c` is an usage example. The [API](#api) section below explains the usage of the functions exported by the library.
 
 
 ## API
 
-The header `i2c-master.h` exports several functions. The final API available for usage depends on a macro definition:
+The header `i2c-initiator.h` exports several functions. The final API available for usage depends on a macro definition:
 
 - If `I2C_LOW_LEVEL_API` is defined, only low level functions will be available.
 - If `I2C_LOW_LEVEL_API` is not defined (default), only high level functions will be available.
 
-The initialization macro `i2c_master_init` is always available.
+The initialization macro `i2c_initiator_init` is always available.
 
 
-### `i2c_master_init`
+### `i2c_initiator_init`
 
 ```c
-#define i2c_master_init(port, sda, scl)
+#define i2c_initiator_init(port, sda, scl)
 ```
 
 This macro initializes the driver.
@@ -47,10 +47,10 @@ The arguments of this macro are:
 These functions are defined by default, when `I2C_LOW_LEVEL_API` is not defined.
 
 
-### `i2c_master_write`
+### `i2c_initiator_write`
 
 ```c
-bool i2c_master_write(uint8_t slave_address, uint8_t reg_address, uint8_t *data, size_t data_len);
+bool i2c_initiator_write(uint8_t slave_address, uint8_t reg_address, uint8_t *data, size_t data_len);
 ```
 
 This function writes to an I2C device connected to the bus.
@@ -65,10 +65,10 @@ The arguments of this function are:
 This function returns `true` if the data was correctly written, otherwise `false`.
 
 
-### `i2c_master_read`
+### `i2c_initiator_read`
 
 ```c
-bool i2c_master_read(uint8_t slave_address, uint8_t reg_address, uint8_t *data, size_t data_len);
+bool i2c_initiator_read(uint8_t slave_address, uint8_t reg_address, uint8_t *data, size_t data_len);
 ```
 
 This function reads from an I2C device connected to the bus.
@@ -88,31 +88,31 @@ This function returns `true` if the data was correctly read, otherwise `false`.
 These functions are defined when `I2C_LOW_LEVEL_API` is defined. They are not intended for direct usage, but are available, if you know what you are doing!
 
 
-### `i2c_master_start_condition`
+### `i2c_initiator_start_condition`
 
 ```c
-void i2c_master_start_condition(void);
+void i2c_initiator_start_condition(void);
 ```
 
 This function sends a start condition to the I2C bus. It will be handled by all of the devices connected to the bus.
 
 
-### `i2c_master_stop_condition`
+### `i2c_initiator_stop_condition`
 
 ```c
-void i2c_master_stop_condition(void);
+void i2c_initiator_stop_condition(void);
 ```
 
-This function sends a stop condition to the I2C bus. It will be handled by the device currently exchanging data with the master.
+This function sends a stop condition to the I2C bus. It will be handled by the device currently exchanging data with the initiator.
 
 
-### `i2c_master_write_byte`
+### `i2c_initiator_write_byte`
 
 ```c
-bool i2c_master_write_byte(uint8_t data);
+bool i2c_initiator_write_byte(uint8_t data);
 ```
 
-This function writes a byte to the I2C bus. It will be handled by the device currently exchanging data with the master.
+This function writes a byte to the I2C bus. It will be handled by the device currently exchanging data with the initiator.
 
 The arguments of this function are:
 
@@ -121,13 +121,13 @@ The arguments of this function are:
 This returns `true` on success, otherwise `false`.
 
 
-### `i2c_master_read_byte`
+### `i2c_initiator_read_byte`
 
 ```c
-uint8_t i2c_master_read_byte(bool last);
+uint8_t i2c_initiator_read_byte(bool last);
 ```
 
-This function reads a byte from the I2C bus. It will be written by the device currently exchanging data with the master.
+This function reads a byte from the I2C bus. It will be written by the device currently exchanging data with the initiator.
 
 The arguments of this function are:
 
